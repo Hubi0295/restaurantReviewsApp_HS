@@ -2,6 +2,7 @@ import {Link} from "react-router-dom";
 import axios from "axios";
 import {useEffect, useState} from "react";
 import {useAuth} from "../AuthContext";
+import { Toaster, toast } from 'react-hot-toast';
 export default function UpBar(){
     const {username, setUsername} = useAuth();
     function logout(){
@@ -9,9 +10,10 @@ export default function UpBar(){
             withCredentials: true
         })
             .then(res => {
+                toast.success("Wylogowano")
                 setUsername(null)
             })
-            .catch(err=>{console.log(err)});
+            .catch(err=>{toast.error(err.response.data.message)});
     }
     useEffect(() => {
         const fetchUser = async () => {
@@ -19,7 +21,6 @@ export default function UpBar(){
                 const res = await fetch("http://localhost:3000/auth/me", {
                     credentials: "include",
                 });
-                console.log(res);
                 if (!res.ok) throw new Error("Nie zalogowany");
                 const data = await res.json();
                 setUsername(data.username);
@@ -31,6 +32,7 @@ export default function UpBar(){
     }, [username]);
     return(
         <>
+            <Toaster position="top-right"/>
             <div
                 className="flex items-center justify-between bg-green-100 text-green-900 px-6 py-1 rounded-b-2xl shadow-md border-b border-green-300 h-30">
                 <Link to="/">

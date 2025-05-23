@@ -3,27 +3,38 @@ import React from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../AuthContext";
+import { Toaster, toast } from 'react-hot-toast';
+
 export default function Login() {
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
     const navigate = useNavigate();
     const {username,setUsername} = useAuth();
-    async function handleSubmit(e){
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function handleSubmit(e) {
         e.preventDefault();
-        await axios.post('http://localhost:3000/auth/login', {
-            email: email,
-            password: password
-        }, {
-            withCredentials: true
-        })
-            .then((resp) => {
-                setUsername(resp.data.username);
-                navigate("/")
-            })
-            .catch((err) => console.log(err))
+        try {
+            const resp = await axios.post('http://localhost:3000/auth/login', {
+                email: email,
+                password: password
+            }, {
+                withCredentials: true
+            });
+            toast.success(resp.data.message);
+            setUsername(resp.data.username);
+            await sleep(1000);
+            console.log("Zalogowano");
+            navigate("/");
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Błąd logowania");
+        }
     }
     return(
         <>
+            <Toaster position="top-right"/>
             <form
                 onSubmit={handleSubmit}
                 className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md mx-auto space-y-6 mt-10"
@@ -62,7 +73,7 @@ export default function Login() {
 
                 <button
                     type="submit"
-                    className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 cursor-pointer"
                 >
                     Zaloguj
                 </button>

@@ -2,6 +2,7 @@
 import React from "react";
 import axios from "axios";
 
+import { Toaster, toast } from 'react-hot-toast';
 export default function Register() {
     const [firstName,setFirstName] = React.useState<string>("");
     const [lastName,setLastName] = React.useState<string>("");
@@ -10,20 +11,29 @@ export default function Register() {
     const [repeatPassword, setRepeatPassword] = React.useState<string>("");
     async function handleSubmit(e){
         e.preventDefault();
+        if(password !== repeatPassword){
+            toast.error("Haslo i powtorz haslo powinno byc takie samo");
+            return;
+        }
         await axios.post('http://localhost:3000/auth/register',{
             firstName: firstName,
             lastName:lastName,
             email: email,
             password: password
         })
-            .then((resp)=>console.log(resp))
-            .catch((err)=>console.log(err))
+            .then((resp)=>{
+                toast.success(resp.data.message);
+            })
+            .catch((err)=>{
+                toast.error(err.response.data.message);
+            })
     }
     return(
         <>
+            <Toaster position="top-right" />
             <form
                 onSubmit={handleSubmit}
-                className="bg-white p-6 rounded-2xl shadow-md w-full max-w-md mx-auto space-y-5 mt-10"
+                className="bg-white p-6 rounded-2xl shadow-md w-full max-w-md mx-auto space-y-5 mt-2"
             >
                 <h2 className="text-2xl font-semibold text-center text-amber-700">Zarejestruj się</h2>
 
@@ -84,7 +94,7 @@ export default function Register() {
 
                 <button
                     type="submit"
-                    className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 cursor-pointer"
                 >
                     Zarejestruj
                 </button>

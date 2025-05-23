@@ -10,7 +10,7 @@ import MyReviews from "./Components/MyReviews";
 import ReviewForm from "./Components/ReviewForm";
 import RestaurantForm from "./Components/RestaurantForm";
 import RestaurantReviews from "./Components/RestaurantReviews";
-
+import { Toaster, toast } from 'react-hot-toast';
 
 
 function App() {

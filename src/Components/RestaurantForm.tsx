@@ -8,9 +8,8 @@ export default function RestaurantForm() {
     const [image, setImage] = useState<File | null>(null);
     const [hasDelivery, setHasDelivery] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    async function handleSubmit  (e: React.FormEvent){
         e.preventDefault();
-
         const formData = new FormData();
         formData.append("name", name);
         formData.append("address", address);
