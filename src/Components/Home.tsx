@@ -18,7 +18,7 @@ export default function Home() {
     console.log(restaurants)
     return(
         <>
-            <h1 className="text-2xl font-bold mb-4 text-center">Lista recenzji danej restauracji</h1>
+            <h1 className="text-2xl font-bold mb-4 text-center">Lista Restauracji</h1>
             <div className="flex flex-col p-5">
                 <table className="w-full border border-amber-300 rounded-lg overflow-hidden shadow-md">
                     <thead className="bg-amber-500 hover:bg-amber-600 text-white">
