@@ -11,6 +11,7 @@ import ReviewForm from "./Components/ReviewForm";
 import RestaurantForm from "./Components/RestaurantForm";
 import RestaurantReviews from "./Components/RestaurantReviews";
 import { Toaster, toast } from 'react-hot-toast';
+import EditReview from "./Components/EditReview";
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
                     <Route path="/" element={<Home/>} ></Route>
                     <Route path="/myReviews" element={<MyReviews/>} ></Route>
                     <Route path="/review" element={<ReviewForm/>} ></Route>
+                    <Route path="/editReview" element={<EditReview/>} ></Route>
                     <Route path="/addRestaurant" element={<RestaurantForm/>} ></Route>
                     <Route path="/restaurant/:id" element={<RestaurantReviews/>} ></Route>
                 </Routes>

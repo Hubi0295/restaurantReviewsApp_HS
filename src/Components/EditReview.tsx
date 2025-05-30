@@ -1,27 +1,23 @@
+import {useLocation, useNavigate} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {toast, Toaster} from "react-hot-toast";
-import {useNavigate} from "react-router-dom";
 
-export default function ReviewForm() {
-    const [restaurantName, setRestaurantName] = useState("");
-    const [review, setReview] = useState("");
-    const [rating, setRating] = useState("");
-    const [dishes, setDishes] = useState([""]);
-    const [images, setImages] = useState([]);
-    const [listNames, setListNames] = useState([]);
+export default function EditReview(){
+    const location = useLocation()
     const navigate = useNavigate();
+    const [restaurantName, setRestaurantName] = useState(location.state.restaurant);
+    const [review, setReview] = useState(location.state.review);
+    const [rating, setRating] = useState(location.state.rating);
+    const [dishes, setDishes] = useState(location.state.dishes);
+    const [images, setImages] = useState(location.state.images);
+    const [listNames, setListNames] = useState([]);
     useEffect(() => {
+        console.log(location.state);
         axios.get("http://localhost:3000/api/listRestaurant")
-            .then((e) => setListNames(e.data.restaurants))
-            .catch((e) => console.log(e));
+            .then((e)=>{setListNames(e.data.restaurants)})
+            .catch((e)=>console.log(e))
     }, []);
-
-    useEffect(() => {
-        if (listNames.length > 0 && !restaurantName) {
-            setRestaurantName(listNames[0].name);
-        }
-    }, [listNames, restaurantName]);
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -53,24 +49,24 @@ export default function ReviewForm() {
         images.forEach((image)=>{
             data.append("images[]",image);
         })
-        console.log(data);
-        axios.post("http://localhost:3000/api/review", data, {
+        axios.put("http://localhost:3000/api/review", data, {
             withCredentials: true,
             headers: {
                 "Content-Type": "multipart/form-data",
             },
-        }).then((resp)=> {
-            toast.success(resp.data.message);
-            sleep(1000);
-            navigate("/myReviews");
         })
-            .catch((err)=>toast.error(err.response?.data?.message || "Błąd logowania"))
+            .then((resp)=>{
+                toast.success(resp.data.message);
+                sleep(1000);
+                navigate("/myReviews");
+            })
+            .catch((err)=>toast.error(err.response?.data?.message || "Błąd logowania"));
 
 
     }
     return (
         <>
-            <Toaster position={"top-right"}/>
+        <Toaster position={"top-right"}/>
         <form
             className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md mx-auto space-y-6 mt-10"
             onSubmit={sendReview}
@@ -79,32 +75,23 @@ export default function ReviewForm() {
 
             <div className="flex flex-col">
                 <label htmlFor="name" className="text-sm font-medium text-gray-700 mb-1">Nazwa restauracji</label>
-                {listNames.length > 0 ? (
-                    <select
-                        name="name"
-                        id="name"
-                        value={restaurantName}
-                        onChange={(e) => setRestaurantName(e.target.value)}
-                    >
-                        {listNames.map((r, k) => (
-                            <option key={k} value={r.name}>
-                                {r.name}
-                            </option>
-                        ))}
-                    </select>
-                ) : (
-                    <p>Ładowanie restauracji...</p>
-                )}
+                <select name="name" id="name" value={restaurantName} onChange={(e) => setRestaurantName(e.target.value)}>
+                    {listNames.map((r, k) => (
+                        <option key={k} value={r.name}>
+                            {r.name}
+                        </option>
+                    ))}
+                </select>
             </div>
             {dishes.map((x,y)=>(
                 <div key={y} className="space-y-4 border-t pt-4">
                     <div className="flex flex-col">
                         <label className="text-sm font-medium text-gray-700 mb-1">Nazwa dania</label>
-
                         <input
                             onChange={(e) => addDish(y, e.target.value)}
                             type="text"
                             className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            value={dishes[y]}
                             required/>
                     </div>
                     <div className="flex flex-col">
@@ -114,8 +101,16 @@ export default function ReviewForm() {
                             type="file"
                             accept="image/*"
                             className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                            required
                         />
+                        <p>Zapisane w bazie:</p>
+                        {typeof images[y] === "string" && (
+                            <img
+                                src={`http://localhost:3000/uploads/reviews/${images[y]}`}
+                                alt="Podgląd"
+                                className="mt-2 max-w-x
+                                s rounded-md"
+                            />
+                        )}
                     </div>
 
                 </div>
@@ -159,9 +154,9 @@ export default function ReviewForm() {
                 type="submit"
                 className="w-full cursor-pointer bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
             >
-                Dodaj recenzję
+                Edytuj recenzję
             </button>
         </form>
-            </>
+        </>
     );
 }

@@ -43,7 +43,7 @@ export default function Home() {
                             <td className="px-6 py-4">{r.type}</td>
                             <td className="px-6 py-4">{r.hasDelivery ? "Tak" : "Nie"}</td>
                             <td className="px-6 py-4" onClick={e => e.stopPropagation()}>
-                                <RestaurantImage src={`http://localhost:3000/uploads/${r.image}`} alt={r.name} />
+                                <RestaurantImage src={`http://localhost:3000/uploads/restaurants/${r.image}`} alt={r.name} />
                             </td>
                         </tr>
                     ))}
