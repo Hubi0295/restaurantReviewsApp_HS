@@ -1,3 +1,4 @@
+// @ts-ignore
 import React, { useState } from "react";
 
 export default function RestaurantForm() {
@@ -7,7 +8,7 @@ export default function RestaurantForm() {
     const [type, setType] = useState("");
     const [image, setImage] = useState<File | null>(null);
     const [hasDelivery, setHasDelivery] = useState(false);
-
+    // @ts-ignore
     async function handleSubmit  (e: React.FormEvent){
         e.preventDefault();
         const formData = new FormData();

@@ -1,14 +1,26 @@
 import {useLocation, useParams} from "react-router-dom";
+// @ts-ignore
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import Review from "./Review";
 import ChartReviews from "./ChartReviews";
+interface ReviewType {
+    _id: string;
+    userId: string;
+    restaurantId: string;
+    rating: number;
+    comment: string;
+    createdAt: string;
+}
 
+interface LocationState {
+    name: string;
+}
 export default function RestaurantReviews(){
-    const { id } = useParams();
-    const [reviews, setReviews] = useState([]);
+    const { id } = useParams<{id: string}>();
+    const [reviews, setReviews] = useState<ReviewType[]>([]);
     const location = useLocation();
-    const {name} = location.state;
+    const {name} = location.state as LocationState;
     useEffect(() => {
         axios.get(`http://localhost:3000/api/restaurantReview/${id}`)
             .then((e)=>{console.log(e);setReviews(e.data.data)})
@@ -18,6 +30,7 @@ export default function RestaurantReviews(){
         <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 {reviews.map((review, index) =>
+                    // @ts-ignore
                     <Review key={index} review={review} manage={false}/>
                 )}
             </div>

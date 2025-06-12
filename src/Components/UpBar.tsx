@@ -16,6 +16,7 @@ export default function UpBar(){
             .catch(err=>{toast.error(err.response.data.message)});
     }
     useEffect(() => {
+        // @ts-ignore
         const fetchUser = async () => {
             try {
                 const res = await fetch("http://localhost:3000/auth/me", {

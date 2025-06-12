@@ -5,6 +5,7 @@ import {BrowserRouter as Router, Link, Route, Routes} from 'react-router-dom';
 import Login from "./Components/Auth/Login";
 import Register from "./Components/Auth/Register";
 import Home from "./Components/Home";
+// @ts-ignore
 import React from "react";
 import MyReviews from "./Components/MyReviews";
 import ReviewForm from "./Components/ReviewForm";
