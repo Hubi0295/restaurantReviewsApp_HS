@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+// @ts-ignore
+import React, {JSX, useEffect, useState} from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import {
@@ -7,30 +8,52 @@ import {
     CategoryScale,
     LinearScale,
     Tooltip,
-    Legend
+    Legend,
 } from "chart.js";
-
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-export default function ChartReviews({ restaurantId, isMy }) {
-    const [reviews, setReviews] = useState([]);
+// Typy
+interface Props {
+    restaurantId: string;
+    isMy: string;
+}
+
+type ReviewRatingOnly = {
+    rating: number;
+};
+
+type ReviewWithRestaurant = {
+    restaurant: string;
+    rating: number;
+};
+
+type Review = ReviewRatingOnly | ReviewWithRestaurant;
+
+export default function ChartReviews({ restaurantId, isMy }: Props): JSX.Element {
+    const [reviews, setReviews] = useState<Review[]>([]);
 
     useEffect(() => {
-        axios.get(`http://localhost:3000/api/reviewsForChart?id=${restaurantId}&my=${isMy}`, {
-            withCredentials: true
-        })
+        axios
+            .get<{ message: Review[] }>(
+                `${backendUrl}/api/reviewsForChart?id=${restaurantId}&my=${isMy}`,
+                { withCredentials: true }
+            )
             .then((res) => {
                 console.log(res.data.message);
                 setReviews(res.data.message);
             })
-            .catch((err) => console.log(err));
+            .catch((err) => console.error("Błąd pobierania danych:", err));
     }, [restaurantId, isMy]);
 
-    // Sprawdzenie: czy mamy tylko {rating}, czy {restaurant, rating}
-    const isRatingOnly = reviews.length > 0 && reviews[0].rating && !reviews[0].restaurant;
+    // Czy mamy tylko rating (np. dla pojedynczego użytkownika)
+    const isRatingOnly =
+        reviews.length > 0 &&
+        "rating" in reviews[0] &&
+        !("restaurant" in reviews[0]);
 
     let chartData = {};
-    let chartOptions = {
+    const chartOptions = {
         responsive: true,
         plugins: {
             legend: { display: false },
@@ -39,55 +62,61 @@ export default function ChartReviews({ restaurantId, isMy }) {
     };
 
     if (isRatingOnly) {
-        // Zlicz liczbę ocen od 1 do 10
-        const counts = Array(10).fill(0);
-        reviews.forEach(({ rating }) => {
+        // @ts-ignore
+        const counts = Array<number>(10).fill(0);
+        (reviews as ReviewRatingOnly[]).forEach(({ rating }) => {
             if (rating >= 1 && rating <= 10) {
                 counts[rating - 1]++;
             }
         });
 
         chartData = {
+            // @ts-ignore
             labels: Array.from({ length: 10 }, (_, i) => (i + 1).toString()),
-            datasets: [{
-                label: "Liczba ocen",
-                data: counts,
-                backgroundColor: "rgba(75, 192, 192, 0.7)",
-            }]
+            datasets: [
+                {
+                    label: "Liczba ocen",
+                    data: counts,
+                    backgroundColor: "rgba(75, 192, 192, 0.7)",
+                },
+            ],
         };
-    } else if (reviews.length > 0 && reviews[0].restaurant) {
-        // Grupowanie ocen wg restauracji
-        const grouped = {};
-        reviews.forEach(({ restaurant, rating }) => {
+    } else if (
+        reviews.length > 0 &&
+        "restaurant" in reviews[0]
+    ) {
+        const grouped: Record<string, number[]> = {};
+        (reviews as ReviewWithRestaurant[]).forEach(({ restaurant, rating }) => {
             if (!grouped[restaurant]) grouped[restaurant] = [];
             grouped[restaurant].push(rating);
         });
 
         const labels = Object.keys(grouped);
-        const avgRatings = labels.map(r => {
+        const avgRatings = labels.map((r) => {
             const sum = grouped[r].reduce((acc, curr) => acc + curr, 0);
-            return (sum / grouped[r].length).toFixed(2);
+            return parseFloat((sum / grouped[r].length).toFixed(2));
         });
 
         chartData = {
             labels,
-            datasets: [{
-                label: "Średnia ocena",
-                data: avgRatings,
-                backgroundColor: "rgba(153, 102, 255, 0.7)",
-            }]
+            datasets: [
+                {
+                    label: "Średnia ocena",
+                    data: avgRatings,
+                    backgroundColor: "rgba(153, 102, 255, 0.7)",
+                },
+            ],
         };
     }
 
     return (
-        <>
-            <div className="text-lg font-semibold h-screen">
-                {reviews.length === 0 ? (
-                    <p>Brak danych do wyświetlenia.</p>
-                ) : (
-                    <Bar data={chartData} options={chartOptions}/>
-                )}
-            </div>
-        </>
+        <div className="text-lg font-semibold h-screen">
+            {reviews.length === 0 ? (
+                <p>Brak danych do wyświetlenia.</p>
+            ) : (
+                // @ts-ignore
+                <Bar data={chartData} options={chartOptions} />
+            )}
+        </div>
     );
 }

@@ -1,4 +1,6 @@
+// @ts-ignore
 import React, { useState } from "react";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function RestaurantForm() {
     const [name, setName] = useState("");
@@ -7,7 +9,7 @@ export default function RestaurantForm() {
     const [type, setType] = useState("");
     const [image, setImage] = useState<File | null>(null);
     const [hasDelivery, setHasDelivery] = useState(false);
-
+    // @ts-ignore
     async function handleSubmit  (e: React.FormEvent){
         e.preventDefault();
         const formData = new FormData();
@@ -21,7 +23,7 @@ export default function RestaurantForm() {
         }
 
         try {
-            const response = await fetch("http://localhost:3000/api/restaurant", {
+            const response = await fetch(`${backendUrl}/api/restaurant`, {
                 method: "POST",
                 body: formData,
             });

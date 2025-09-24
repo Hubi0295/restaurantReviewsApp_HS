@@ -1,31 +1,39 @@
 
-import React from "react";
-import axios from "axios";
+// @ts-ignore
+import React, {FormEvent} from "react";
+import axios, {AxiosError} from "axios";
 
 import { Toaster, toast } from 'react-hot-toast';
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+interface registerResponse {
+    message: string;
+}
 export default function Register() {
     const [firstName,setFirstName] = React.useState<string>("");
     const [lastName,setLastName] = React.useState<string>("");
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
     const [repeatPassword, setRepeatPassword] = React.useState<string>("");
-    async function handleSubmit(e){
+
+    // @ts-ignore
+    async function handleSubmit(e: FormEvent<HTMLFormElement>){
         e.preventDefault();
         if(password !== repeatPassword){
             toast.error("Haslo i powtorz haslo powinno byc takie samo");
             return;
         }
-        await axios.post('http://localhost:3000/auth/register',{
-            firstName: firstName,
-            lastName:lastName,
-            email: email,
-            password: password
+        await axios.post<registerResponse>(`${backendUrl}/auth/register`,{
+            firstName,
+            lastName,
+            email,
+            password
         })
             .then((resp)=>{
                 toast.success(resp.data.message);
             })
             .catch((err)=>{
-                toast.error(err.response.data.message);
+                const axiosError = err as AxiosError<{ message?: string }>;
+                toast.error(axiosError.response?.data?.message || "Błąd rejestracji");
             })
     }
     return(

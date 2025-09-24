@@ -1,25 +1,31 @@
 
-import React from "react";
-import axios from "axios";
+// @ts-ignore
+import React, {FormEvent} from "react";
+import axios, {AxiosError} from "axios";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../AuthContext";
 import { Toaster, toast } from 'react-hot-toast';
-
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+interface LoginResponse {
+    message: string;
+    username: string;
+}
 export default function Login() {
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
     const navigate = useNavigate();
     const {username,setUsername} = useAuth();
-    function sleep(ms) {
+    function sleep(ms: number): Promise<void> {
+        // @ts-ignore
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async function handleSubmit(e) {
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         try {
-            const resp = await axios.post('http://localhost:3000/auth/login', {
-                email: email,
-                password: password
+            const resp = await axios.post<LoginResponse>(`${backendUrl}/auth/login`, {
+                email,
+                password
             }, {
                 withCredentials: true
             });
@@ -29,7 +35,9 @@ export default function Login() {
             console.log("Zalogowano");
             navigate("/");
         } catch (err) {
-            toast.error(err.response?.data?.message || "Błąd logowania");
+            const axiosMessage = err as AxiosError<{message?: string}>
+            const errorMessage = axiosMessage.response?.data?.message || "Błąd logowania";
+            toast.error(errorMessage);
         }
     }
     return(

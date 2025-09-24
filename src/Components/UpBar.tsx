@@ -3,10 +3,11 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import {useAuth} from "../AuthContext";
 import { Toaster, toast } from 'react-hot-toast';
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export default function UpBar(){
     const {username, setUsername} = useAuth();
     function logout(){
-        axios.post("http://localhost:3000/auth/logout",{},{
+        axios.post(`${backendUrl}/auth/logout`,{},{
             withCredentials: true
         })
             .then(res => {
@@ -16,9 +17,10 @@ export default function UpBar(){
             .catch(err=>{toast.error(err.response.data.message)});
     }
     useEffect(() => {
+        // @ts-ignore
         const fetchUser = async () => {
             try {
-                const res = await fetch("http://localhost:3000/auth/me", {
+                const res = await fetch(`${backendUrl}/auth/me`, {
                     credentials: "include",
                 });
                 if (!res.ok) throw new Error("Nie zalogowany");

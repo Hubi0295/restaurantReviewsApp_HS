@@ -1,7 +1,12 @@
+// @ts-ignore
 import React, { useState } from "react";
 
-export default function RestaurantImage({ src, alt }) {
-    const [isOpen, setIsOpen] = useState(false);
+interface RestaurantImageProps {
+    src: string;
+    alt: string;
+}
+export default function RestaurantImage({ src, alt }: RestaurantImageProps) {
+    const [isOpen, setIsOpen] = useState<boolean>(false);
 
     return (
         <>
