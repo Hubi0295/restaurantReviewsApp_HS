@@ -38,7 +38,7 @@ export default function UpBar(){
             <div
                 className="flex items-center justify-between bg-green-100 text-green-900 px-6 py-1 rounded-b-2xl shadow-md border-b border-green-300 h-30">
                 <Link to="/">
-                    <img src="/public/logo.webp" alt="Logo" className="h-25 rounded-xl w-auto"/>
+                    <img src="/public/logo.jpg" alt="Logo" className="h-25 rounded-xl w-auto"/>
                 </Link>
                 {username ?
                     <div className="flex gap-2">
