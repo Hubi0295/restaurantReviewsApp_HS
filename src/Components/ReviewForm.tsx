@@ -65,7 +65,7 @@ export default function ReviewForm() {
         });
 
         images.forEach((image) => {
-            if (image) data.append("images[]", image);
+            if (image) data.append("images", image);
         });
 
         try {

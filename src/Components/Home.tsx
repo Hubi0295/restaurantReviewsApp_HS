@@ -112,7 +112,7 @@ export default function Home(): JSX.Element {
                                 onClick={(e) => e.stopPropagation()} // zapobiega nawigacji po kliknięciu w obrazek
                             >
                                 <RestaurantImage
-                                    src={`${backendUrl}/uploads/restaurants/${r.image}`}
+                                    src={r.image}
                                     alt={r.name}
                                 />
                             </td>

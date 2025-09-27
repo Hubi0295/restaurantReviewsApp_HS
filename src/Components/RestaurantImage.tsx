@@ -26,7 +26,7 @@ export default function RestaurantImage({ src, alt }: RestaurantImageProps) {
                         src={src}
                         alt={alt}
                         className="max-w-[90vw] max-h-[90vh] rounded shadow-lg"
-                        onClick={e => e.stopPropagation()} // kliknięcie na obraz nie zamknie modala
+                        onClick={e => e.stopPropagation()} 
                     />
                 </div>
             )}

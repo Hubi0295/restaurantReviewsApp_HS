@@ -17,6 +17,7 @@ interface LocationState {
     rating: string;
     dishes: string[];
     images: DishImage[];
+    id: string;
 }
 
 export default function EditReview(): JSX.Element {
@@ -27,6 +28,7 @@ export default function EditReview(): JSX.Element {
 
     const [restaurantName, setRestaurantName] = useState(state.restaurant);
     const [review, setReview] = useState(state.review);
+    const [reviewId, setReviewId] = useState(state.id);
     const [rating, setRating] = useState(state.rating);
     const [dishes, setDishes] = useState<string[]>(state.dishes);
     const [images, setImages] = useState<DishImage[]>(state.images);
@@ -66,10 +68,11 @@ export default function EditReview(): JSX.Element {
         dishes.forEach((dish) => data.append("dishes[]", dish));
         images.forEach((img) => {
             if (typeof img !== "string") {
-                data.append("images[]", img);
+                data.append("images", img);
             }
         });
-
+        data.append("reviewId", reviewId);
+        console.log(reviewId)
         try {
             const resp = await axios.put(`${backendUrl}/api/review`, data, {
                 withCredentials: true,
@@ -131,7 +134,7 @@ export default function EditReview(): JSX.Element {
                             />
                             {typeof images[idx] === "string" && images[idx] && (
                                 <img
-                                    src={`${backendUrl}/uploads/reviews/${images[idx]}`}
+                                    src={`${images[idx]}`}
                                     alt="Podgląd"
                                     className="mt-2 max-w-xs rounded-md"
                                 />

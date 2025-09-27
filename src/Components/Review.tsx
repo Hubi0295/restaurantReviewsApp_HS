@@ -18,8 +18,6 @@ interface ReviewProps {
         images: string[];
     };
     manage: boolean;
-    // key jest zarezerwowanym słowem React, nie powinno się go przekazywać jako props,
-    // dlatego nie typujemy go tutaj
 }
 
 export default function Review({ review, manage }: ReviewProps) {
@@ -36,6 +34,7 @@ export default function Review({ review, manage }: ReviewProps) {
 
     async function handleDelete() {
         try {
+            console.log(review);
             const res = await axios.delete(`${backendUrl}/api/review/${review.id}`);
             toast.success(res.data.message);
             await sleep(1000);
@@ -85,7 +84,7 @@ export default function Review({ review, manage }: ReviewProps) {
                                 <RestaurantImage
                                     // @ts-ignore
                                     key={idx}
-                                    src={`${backendUrl}/uploads/reviews/${img}`}
+                                    src={img}
                                     alt={img}
                                     className="rounded-lg border border-amber-200"
                                 />
